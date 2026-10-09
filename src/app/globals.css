@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────
+   ROADBOOK — design tokens
+   World: rally roadbook + topographic road atlas.
+   Paper is the map, Venice ink draws it, Rock Blue is the contour
+   and water, route orange is the one road you are on.
+   ────────────────────────────────────────────────────────────── */
+
+/* static: every colour token is always emitted, because canvas and WebGL read them from JS (src/lib/palette.ts) */
+@theme static {
+  /* palette */
+  --color-paper: #f5eedd;        /* Merino: the map sheet */
+  --color-paper-deep: #ece2c9;   /* folded / shaded sheet */
+  --color-paper-line: #d9cdb0;   /* hairlines printed on paper */
+  --color-ink: #0e2f44;          /* body text, darkest print */
+  --color-venice: #16587b;       /* Venice Blue: headings, filled fields */
+  --color-venice-deep: #0f4361;
+  --color-rock: #84b3ce;         /* Rock Blue: contours, water */
+  --color-rock-soft: #c3dbe7;    /* faint contour tint on paper */
+  --color-route: #e8642c;        /* the road you are on */
+  --color-route-deep: #c24e1c;
+  --color-night: #0c2738;        /* night stage */
+  --color-night-2: #123548;
+  --color-night-line: #24506a;
+  --color-water: #a7c6d6;        /* lakes on the hero map */
+  --color-shade: #ddd9cb;        /* hill shading on the hero map */
+}
+
+/* Panchang and Satoshi load from Fontshare (lib/fontshare.ts). These metric-matched Arial faces hold their place
+   until the real files arrive, so the text barely moves when they swap in. */
+@font-face { font-family: "Panchang Fallback"; src: local("Arial"); ascent-override: 58.57%; descent-override: 15.7%; line-gap-override: 5.43%; size-adjust: 165.62%; }
+@font-face { font-family: "Satoshi Fallback"; src: local("Arial"); ascent-override: 92.36%; descent-override: 21.95%; line-gap-override: 9.14%; size-adjust: 109.35%; }
+
+:root {
+  --font-panchang: "Panchang", "Panchang Fallback";
+  --font-satoshi: "Satoshi", "Satoshi Fallback";
+}
+
+/* outline lettering: the static Extrabold cut (see components/stages/outlineFont.ts) */
+.font-outline { font-family: "Panchang Outline", "Panchang Fallback", "Arial Black", sans-serif; font-weight: 800; font-style: normal; }
+
+@theme {
+  /* type */
+  --font-display: var(--font-panchang), "Arial Black", sans-serif;
+  --font-sans: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* layout */
+  --container-route: 88rem;
+}
+
+:root {
+  --gutter: clamp(1rem, 4vw, 3.5rem);
+  --section-y: clamp(6rem, 12vw, 11rem);
+  color-scheme: light;
+}
+
+/* ── base (layered, so Tailwind utilities can override it) ─────── */
+
+@layer base {
+
+  html {
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scrollbar-color: var(--color-venice) var(--color-paper-deep);
+    scrollbar-width: thin;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-feature-settings: "ss01", "kern";
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-route);
+    color: var(--color-ink);
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--color-paper-deep); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-venice);
+    border: 2px solid var(--color-paper-deep);
+    border-radius: 999px;
+  }
+
+  input, textarea { caret-color: var(--color-route); }
+
+  :focus-visible {
+    /* route-deep passes 3:1 on paper; darker grounds re-ink it below */
+    outline: 2px solid var(--focus-ring, var(--color-route-deep));
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* a section focused after an in-page jump does not need a ring around the whole sheet */
+  section[tabindex="-1"]:focus { outline: none; }
+
+  a { text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+/* ── type roles ──────────────────────────────────────────────── */
+
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 760;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+}
+
+.t-heading {
+  font-family: var(--font-display);
+  font-weight: 640;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  font-size: clamp(2rem, 4.6vw, 3.9rem);
+}
+
+.t-map {
+  /* map annotation: coordinates, distances, dates — real measurements only */
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── paper grain: fixed, never scrolls, never repaints ───────── */
+
+.paper-grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.05  0 0 0 0 0.18  0 0 0 0 0.27  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ── Lenis ───────────────────────────────────────────────────── */
+
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent], .lenis [data-lenis-prevent-wheel], .lenis [data-lenis-prevent-touch] { overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+/* ── loader gate: content is always in the DOM for crawlers and no-JS ── */
+
+/* No :has() here: a :has() anchored on <html> makes every DOM text change anywhere (the odometer, the trip computer,
+   the stage-profile date tag) restyle the whole document, every frame. Pages without the loader clear the
+   attribute themselves (ClearLoading); no-JS clears it with the noscript rule in the layout. */
+html[data-loading="true"] body { overflow: hidden; }
+
+/* focus ring colour per ground: >= 3:1 everywhere */
+#stages, header[data-tone="venice"] { --focus-ring: var(--color-paper); }
+#side-roads, #licences, footer, header[data-tone="night"] { --focus-ring: var(--color-route); }
+#finish, header[data-tone="route"] { --focus-ring: var(--color-night); }
+
+/* ── route cursor: a waypoint dot and the car that drives to it ── */
+
+@media (hover: hover) and (pointer: fine) {
+  html.route-cursor-on, html.route-cursor-on * { cursor: none !important; }
+  html.route-cursor-on input, html.route-cursor-on textarea, html.route-cursor-on [contenteditable="true"] { cursor: text !important; }
+}
+.route-cursor { --rc-ink: var(--color-ink); --rc-paper: var(--color-paper); }
+.route-cursor[data-tone="dark"] { --rc-ink: var(--color-paper); --rc-paper: var(--color-night); }
+.route-cursor { --rc-mark: var(--color-route); }
+.route-cursor[data-tone="route"] { --rc-mark: var(--color-night); }
+
+.route-cursor[data-tone="route"] .rc-tail { fill: var(--color-paper); }
+
+.rc-body { fill: var(--rc-ink); transition: fill 200ms ease; }
+.rc-tyre { fill: var(--rc-ink); opacity: 0.55; transition: fill 200ms ease; }
+.rc-glass { fill: var(--color-rock-soft); }
+.route-cursor[data-tone="dark"] .rc-glass { fill: var(--color-venice); }
+.rc-tail { fill: var(--color-route-deep); opacity: 0.55; transition: opacity 180ms ease, fill 180ms ease; }
+.rc-car[data-lit="true"] .rc-tail { fill: var(--color-route); opacity: 1; }
+.rc-car svg { display: block; filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--color-ink) 28%, transparent)); }
+.rc-bracket { width: 24px; height: 24px; }
+.rc-corner { position: absolute; width: 9px; height: 9px; border-color: var(--rc-mark, var(--color-route)); border-width: 0; transition: border-color 200ms ease; }
+.rc-corner.border-t { border-top-width: 1.5px; }
+.rc-corner.border-b { border-bottom-width: 1.5px; }
+.rc-corner.border-l { border-left-width: 1.5px; }
+.rc-corner.border-r { border-right-width: 1.5px; }
+.rc-label { background: var(--rc-ink); color: var(--rc-paper); white-space: nowrap; }
+
+/* ── builds: callouts re-ink on the newly opened screen ───── */
+
+.callout-swap { animation: callout-swap 420ms var(--ease-out) 240ms both; }
+@keyframes callout-swap { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── reduced motion: keep fades, drop travel ─────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
