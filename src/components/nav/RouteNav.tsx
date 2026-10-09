@@ -353,14 +353,6 @@ export function RouteNav() {
               <Odometer value={km} height={18} />
             </span>
 
-            <a
-              href={person.resume}
-              download
-              className="hidden text-[0.875rem] font-medium underline decoration-[color:var(--nav-hair)] decoration-1 underline-offset-[0.3em] transition-[text-decoration-color] duration-200 hover:decoration-[color:var(--nav-fg)] md:inline"
-            >
-              Resume
-            </a>
-
             <button
               ref={mapButtonRef}
               type="button"

@@ -171,13 +171,6 @@ export function MapSheet({ open, stops, active, triggerRef, onClose }: Props) {
       <div data-map-item className="mx-auto w-full max-w-[var(--container-route)] px-[var(--gutter)] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-between border-t border-paper-line pt-5">
           <a
-            href={person.resume}
-            download
-            className="inline-flex min-h-11 items-center text-[0.9375rem] font-medium underline decoration-ink/25 decoration-1 underline-offset-[0.3em] transition-[text-decoration-color] duration-200 hover:decoration-ink"
-          >
-            Resume
-          </a>
-          <a
             href={`mailto:${person.email}`}
             className="inline-flex min-h-11 items-center text-[0.875rem] text-ink/75 underline decoration-ink/20 decoration-1 underline-offset-[0.3em]"
           >

@@ -26,7 +26,6 @@ export const person = {
   email: "nithingandrathi2707@gmail.com",
   linkedin: "https://www.linkedin.com/in/nithin-gandrathi/",
   github: "https://github.com/nithin-2707",
-  resume: "/Nithin_Gandrathi_Resume.pdf",
   description:
     "Nithin Gandrathi is a software engineer and B.Tech Computer Science graduate (VIT-AP University, 2026) who builds full-stack web products and LLM-powered systems: React and Next.js interfaces, Node.js and FastAPI services, and open-source model serving on GPUs.",
 } as const;

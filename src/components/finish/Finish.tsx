@@ -28,35 +28,16 @@ function GitHubMark() {
   );
 }
 
-/** A filled sheet with a folded corner and a download arrow cut out of it in the paper colour. */
-function ResumeMark() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" className="size-full">
-      <path fill="currentColor" d="M6.5 1.5h7.7l6.3 6.3V20a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4.5 20V4a2.5 2.5 0 0 1 2-2.5Z" />
-      <path className="stroke-paper" strokeWidth="1.4" strokeLinejoin="round" d="M13.7 1.9v4.6a1.3 1.3 0 0 0 1.3 1.3h4.6" />
-      <path
-        className="stroke-paper"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12.5 10.6v6.4M9.6 14.2l2.9 2.9 2.9-2.9"
-      />
-    </svg>
-  );
-}
-
 type GiantLink = {
   label: string;
   meta: string;
   href: string;
   icon: ReactNode;
-  kind: "external" | "download";
 };
 
 const LINKS: GiantLink[] = [
-  { label: "LinkedIn", meta: "in/nithin-gandrathi", href: person.linkedin, icon: <LinkedInMark />, kind: "external" },
-  { label: "GitHub", meta: "nithin-2707", href: person.github, icon: <GitHubMark />, kind: "external" },
-  { label: "Resume", meta: "PDF", href: person.resume, icon: <ResumeMark />, kind: "download" },
+  { label: "LinkedIn", meta: "in/nithin-gandrathi", href: person.linkedin, icon: <LinkedInMark /> },
+  { label: "GitHub", meta: "nithin-2707", href: person.github, icon: <GitHubMark /> },
 ];
 
 /**
@@ -101,9 +82,8 @@ export function Finish() {
               <li key={link.label}>
                 <a
                   href={link.href}
-                  {...(link.kind === "external"
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : { download: "Nithin_Gandrathi_Resume.pdf", type: "application/pdf" })}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group/road inline-flex min-h-11 items-center gap-4 py-2.5 transition-transform duration-150 ease-out active:scale-[0.97] sm:gap-5"
                 >
                   <span className="size-[clamp(1.35rem,2vw,1.7rem)] shrink-0 text-night">{link.icon}</span>
@@ -113,8 +93,7 @@ export function Finish() {
                   </span>
                   <span className="translate-y-[0.1em] text-[0.875rem] font-medium text-night">
                     {link.meta}
-                    {link.kind === "external" ? <span className="sr-only">, opens in a new tab</span> : null}
-                    {link.kind === "download" ? <span className="sr-only">, downloads the file</span> : null}
+                    <span className="sr-only">, opens in a new tab</span>
                   </span>
                 </a>
               </li>

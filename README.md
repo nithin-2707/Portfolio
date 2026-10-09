@@ -69,7 +69,7 @@ src/
     cursor/       car cursor
     route/        the orange route drawn down the page
   lib/            GSAP setup, scroll state, font loading, hooks
-public/           screenshots, icons, resume
+public/           screenshots, icons, textures
 ```
 
 All content lives in `src/content/site.ts`.
@@ -92,4 +92,4 @@ All content lives in `src/content/site.ts`.
 
 ## License
 
-© 2026 Nithin Gandrathi. The code is shared for viewing and reference. The content, copy, screenshots and resume are mine and may not be reused.
+© 2026 Nithin Gandrathi. The code is shared for viewing and reference. The content, copy and screenshots are mine and may not be reused.

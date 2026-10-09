@@ -1,7 +1,7 @@
 import { areas } from "@/content/areas";
 import { person } from "@/content/site";
 import { HeroCopy } from "../HeroCopy";
-import { NAME_LINES, ResumeTicket } from "../parts";
+import { NAME_LINES } from "../parts";
 import { RouteButton } from "../RouteButton";
 import { StrokeText } from "../StrokeText";
 import { CircuitMap } from "./CircuitMap";
@@ -36,7 +36,6 @@ export function HeroCircuit() {
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-2 sm:gap-3">
               <RouteButton href="#profile">View the route</RouteButton>
-              <ResumeTicket />
             </div>
           </HeroCopy>
         </div>
